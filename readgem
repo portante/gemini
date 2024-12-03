@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import serial
+import time
+import sys
+
+# Configure the serial port
+ser = serial.Serial(
+    port=sys.argv[1],
+    baudrate=115200,
+    timeout=0
+)
+
+# Function to send data
+def send_data(data):
+    ser.write(data.encode())
+    print(f"Sent [{len(data)}]: {data}")
+
+# Function to read data
+def read_data():
+    crlf = False
+    data = b''
+    data_l = 0
+    while not crlf:
+        while ser.in_waiting > 0:
+            line_data = ser.read(ser.in_waiting)
+            line_data_l = len(line_data)
+            assert (line_data_l != 0), "Expected data to be read with ser.in_waiting > 0"
+            data += line_data   
+            data_l += line_data_l
+        crlf = (data[-2:] == b'\r\n')
+        if not crlf:
+            time.sleep(0.1)
+    return data.decode('utf-8')
+
+# Main loop
+try:
+    # Set the GEM to use ASCII "key=value" format
+    send_data('^^^SYSPKT02')
+    while True:
+        # Wait for a response
+        data = read_data()
+        print(f"Received [{len(data)}]: {data!r}")
+except KeyboardInterrupt:
+    # Close the serial port
+    ser.close()
+    print("Serial port closed.")
