@@ -1,5 +1,5 @@
 # gemini
-A simple BrulTech GEM (Green Eye Monitor) data reader.
+A simple reset for the BrulTech GEM (Green Eye Monitor).
 
 See also:
  * http://lancet.mit.edu/mwall/projects/power/
